@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         mapButton.setOnClickListener {
             val placeName = placeNameInput.text.toString()
             // Validation not empty
-            if (placeName.isBlank()) {
+            if (placeName.isEmpty()) {
                 Toast.makeText(this, getString(R.string.no_place_entered_error), Toast.LENGTH_SHORT).show()
             } else {
                 // Log statements
@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         val geocoder = Geocoder(this)
         try {
             val addresses = geocoder.getFromLocationName(placeName, 1)
+            val address = addresses?.firstOrNull()
             // use and intent to launch map app, for first location, if a location is found
 
             if (addresses != null) {
@@ -54,11 +55,11 @@ class MainActivity : AppCompatActivity() {
                     val address = addresses.first()
                     Log.d(TAG, "First address is $address")
                     val geoUriString =
-                        "geo:${address?.latitude},${address?.longitude}" // " geo:45,-90" Minneapolis
+                        "geo:${address.latitude},${address.longitude}" // " geo:45,-90" Minneapolis
                     // Log for geo tag
                     Log.d(TAG, "Using geo uri $geoUriString")
                     val geoUri = Uri.parse(geoUriString)
-                    val mapIntent = Intent(Intent.ACTION_VIEW)
+                    val mapIntent = Intent(Intent.ACTION_VIEW, geoUri)
                     Log.d(TAG, "Launching map activity")
                     startActivity(mapIntent)
                 } else {
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IOException) {
             Log.e(TAG, "Unable to geocode place $placeName", e)
             Toast.makeText(this, "Sorry, unable to geocode place. Are you online?",
-            Toast.LENGTH_LONG).show()
+                Toast.LENGTH_LONG).show()
         }
     }
 }
